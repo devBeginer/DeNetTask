@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">DeNetTask</string>
+    <string name="fab_edit_title">Добавить</string>
+    <string name="toolbar_title">RootFragment</string>
+    <string name="node_name">Название узла</string>
+    <string name="action_delete">Удалить</string>
+    <string name="child_count">Число дочерних узлов</string>
+    <string name="toolbar_title_parent">Имя родительского узла</string>
 </resources>
