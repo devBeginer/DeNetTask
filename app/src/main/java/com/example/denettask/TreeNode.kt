@@ -9,7 +9,7 @@ class TreeNode(
     constructor(
         name: String,
         parent: TreeNode?,
-        children: ArrayList<TreeNode>
+        children: ArrayList<TreeNode> = arrayListOf()
     ): this(parent, children){
         this.name = name
     }
