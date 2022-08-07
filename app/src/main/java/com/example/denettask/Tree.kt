@@ -16,11 +16,8 @@ class Tree(val root: TreeNode = TreeNode(null)) {
         }
     }
 
-    fun iteration(node: TreeNode, onIteration: (node: TreeNode) -> Unit)/*: ArrayList<TreeNode>*/{
-        //val nodes = arrayListOf(node)
+    fun iteration(node: TreeNode, onIteration: (node: TreeNode) -> Unit){
         onIteration(node)
-        //for (child in node.children) nodes.addAll(iteration(child))
         for (child in node.children) iteration(child, onIteration)
-        //return nodes
     }
 }

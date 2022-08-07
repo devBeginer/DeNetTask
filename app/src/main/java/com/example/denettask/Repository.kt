@@ -5,21 +5,7 @@ import kotlinx.coroutines.runBlocking
 
 class Repository(private val dao: Dao) {
 
-    lateinit var tree: Tree
-
-    init {
-        runBlocking {
-            launch {
-                tree = buildTree()
-            }
-        }
-    }
-
-    fun getRoot(): TreeNode {
-        return tree.root
-    }
-
-    suspend fun buildTree(): Tree {
+    suspend fun buildTree(onResult: (tree: Tree) -> Unit): Tree {
         val nodes = dao.getRoot()
         val root: TreeNode
         if (nodes.isEmpty()) {
@@ -30,9 +16,12 @@ class Repository(private val dao: Dao) {
             treeIterator(root, nodes.first())
 
         }
+        val tree = Tree(root)
 
+        println(tree)
+        onResult(tree)
 
-        return Tree(root)
+        return tree
     }
 
     suspend fun treeIterator(treeParent: TreeNode, dbParent: DBNode) {
@@ -47,37 +36,14 @@ class Repository(private val dao: Dao) {
     }
 
 
-    fun deleteNode(node: TreeNode) {
-        tree.deleteNode(node)
-
-    }
-
-    fun getChild(current: TreeNode, name: String): TreeNode {
-        val node = current.children.filter { it.name == name }
-        return node.first()
-    }
-
-    fun getChildren(node: TreeNode): List<TreeNode> {
-        return node.children
-    }
-
-    fun getParent(current: TreeNode): TreeNode? {
-        return current.parent
-    }
-
-    fun insert(current: TreeNode) {
-        tree.insertNode(current)
-    }
-
-    suspend fun saveTree() {
+    suspend fun saveTree(tree: Tree) {
         dao.dropTable()
         tree.iteration(tree.root) {
             runBlocking {
                 launch {
                     val parent =
                         if (it.parent != null) dao.getNodeByName(it.parent!!.name)?.id else null
-                    val tmp = DBNode(name = it.name, parent = parent)
-                    dao.insertNode(tmp)
+                    dao.insertNode(DBNode(name = it.name, parent = parent))
                 }
             }
         }

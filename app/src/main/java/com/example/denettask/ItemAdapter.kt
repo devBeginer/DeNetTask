@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.extensions.LayoutContainer
 
-class ItemAdapter(val onClick: (name: String) -> Unit, val onDelete: (name: String) -> Unit) :
+class ItemAdapter(val onClick: (node: TreeNode) -> Unit, val onDelete: (node: TreeNode) -> Unit) :
     RecyclerView.Adapter<ItemAdapter.ViewHolder>() {
     private var values: List<TreeNode> = ArrayList()
 
@@ -31,7 +31,7 @@ class ItemAdapter(val onClick: (name: String) -> Unit, val onDelete: (name: Stri
         holder.nameTextView?.text = values[position].name
         holder.childCountTextView?.text = values[position].children.size.toString()
         holder.deleteButton?.setOnClickListener {
-            onDelete(values[position].name)
+            onDelete(values[position])
         }
     }
 
@@ -48,7 +48,7 @@ class ItemAdapter(val onClick: (name: String) -> Unit, val onDelete: (name: Stri
             deleteButton = containerView.findViewById(R.id.btn_item_delete_node)
 
             containerView.setOnClickListener {
-                onClick(values[adapterPosition].name)
+                onClick(values[adapterPosition])
             }
         }
     }

@@ -12,6 +12,7 @@ class RootFragment() : Fragment(R.layout.fragment_root) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         initView()
     }
 
@@ -20,6 +21,7 @@ class RootFragment() : Fragment(R.layout.fragment_root) {
         root_node_item.setOnClickListener { findNavController().navigate(
             RootFragmentDirections.actionRootFragmentToChildFragment()
         ) }
+
         viewModel.initRoot()
 
         viewModel.current.observe(viewLifecycleOwner) {

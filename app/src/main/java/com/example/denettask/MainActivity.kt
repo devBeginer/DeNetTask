@@ -10,8 +10,10 @@ class MainActivity : AppCompatActivity() {
     lateinit var navController: NavController
     private val viewModel:TreeViewModel by inject()
     override fun onCreate(savedInstanceState: Bundle?) {
+        viewModel.initTree()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
         navController = Navigation.findNavController(this, R.id.nav_host_fragment)
     }
 

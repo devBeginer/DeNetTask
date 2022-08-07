@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 
 class TreeViewModel(private val repository: Repository) : ViewModel() {
+    private var tree : Tree? = null
 
     private val loadChildren = MutableLiveData<List<TreeNode>>(emptyList())
     val children: LiveData<List<TreeNode>>
@@ -17,43 +18,53 @@ class TreeViewModel(private val repository: Repository) : ViewModel() {
         get() = loadCurrent
 
     fun initRoot() {
-        viewModelScope.launch {
-            val node = repository.getRoot()
-            loadCurrent.postValue(node)
-            loadChildren.postValue(repository.getChildren(node))
+        val node = tree?.root
+        if (node != null){
+            loadCurrent.postValue(node!!)
+            loadChildren.postValue(node.children)
         }
     }
 
 
-    fun select(name: String) {
-        val node = current.value?.let { repository.getChild(it, name) }
-        loadCurrent.postValue(node!!)
-        loadChildren.postValue(repository.getChildren(node))
+    fun select(node: TreeNode) {
+        loadCurrent.postValue(node)
+        loadChildren.postValue(node.children)
     }
 
     fun onBack() {
-        val node = current.value?.let { repository.getParent(it) }
+        val node = loadCurrent.value?.parent
         if (node != null){
             loadCurrent.postValue(node!!)
-            loadChildren.postValue(repository.getChildren(node))
+            loadChildren.postValue(node.children)
         }
     }
 
-    fun delete(name: String) {
-        val node = current.value?.let { repository.getChild(it, name) }
-        repository.deleteNode(node!!)
-        loadChildren.postValue(current.value?.let { repository.getChildren(it) })
+    fun delete(node: TreeNode) {
+        tree?.let { it.deleteNode(node) }
+        loadChildren.postValue(loadCurrent.value?.children)
     }
 
     fun add() {
-        current.value?.let { repository.insert(it) }
-        loadChildren.postValue(current.value?.let { repository.getChildren(it) })
+        loadCurrent.value?.let { node-> tree?.let { tree -> tree.insertNode(node) } }
+        loadChildren.postValue(loadCurrent.value?.children)
     }
 
     fun save() {
         viewModelScope.launch {
-            repository.saveTree()
+            tree?.let { repository.saveTree(it) }
         }
     }
 
+    fun initTree() {
+        viewModelScope.launch {
+            tree = repository.buildTree(){
+                tree = it
+                val node = tree?.root
+                if (node != null){
+                    loadCurrent.postValue(node!!)
+                    loadChildren.postValue(node.children)
+                }
+            }
+        }
+    }
 }
