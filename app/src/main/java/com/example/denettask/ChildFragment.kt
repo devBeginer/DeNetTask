@@ -2,6 +2,7 @@ package com.example.denettask
 
 import android.os.Bundle
 import android.view.View
+import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -22,6 +23,10 @@ class ChildFragment() : Fragment(R.layout.fragment_child) {
     private fun initView() {
         toolbar_child.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)
         toolbar_child.setNavigationOnClickListener() {
+            viewModel.onBack()
+            findNavController().popBackStack()
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(){
             viewModel.onBack()
             findNavController().popBackStack()
         }
